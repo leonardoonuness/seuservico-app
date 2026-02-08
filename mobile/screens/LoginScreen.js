@@ -10,7 +10,7 @@ import {
   Platform,
   Alert,
 } from 'react-native';
-import axios from 'axios';
+import api from '../services/api';
 
 const LoginScreen = ({ navigation, onLogin }) => {
   const [email, setEmail] = useState('');
@@ -25,7 +25,7 @@ const LoginScreen = ({ navigation, onLogin }) => {
 
     setLoading(true);
     try {
-      const response = await axios.post('/auth/login', { email, password });
+      const response = await api.post('/auth/login', { email, password });
       
       if (response.data.user.type === 'professional' && !response.data.user.isVerified) {
         Alert.alert('Aguardando aprovação', 'Seu cadastro está em análise pela nossa equipe.');

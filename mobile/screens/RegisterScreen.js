@@ -12,7 +12,7 @@ import {
   FlatList,
 } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
-import axios from 'axios';
+import api from '../services/api';
 import { Picker } from '@react-native-picker/picker';
 
 const ProfessionalRegisterScreen = ({ navigation }) => {
@@ -47,7 +47,7 @@ const ProfessionalRegisterScreen = ({ navigation }) => {
 
   const loadCategories = async () => {
     try {
-      const response = await axios.get('/categories');
+      const response = await api.get('/categories');
       setCategories(response.data);
     } catch (error) {
       console.error('Erro ao carregar categorias:', error);
@@ -116,7 +116,7 @@ const ProfessionalRegisterScreen = ({ navigation }) => {
         type: 'professional',
       };
 
-      const userResponse = await axios.post('/auth/register', userData);
+      const userResponse = await api.post('/auth/register', userData);
       
       // 2. Completar cadastro profissional
       const professionalData = {
@@ -129,7 +129,7 @@ const ProfessionalRegisterScreen = ({ navigation }) => {
         portfolio: portfolioImages,
       };
 
-      await axios.post('/professionals/complete-profile', professionalData);
+      await api.post('/professionals/complete-profile', professionalData);
       
       Alert.alert(
         'Cadastro realizado!',

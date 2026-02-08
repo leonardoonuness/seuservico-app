@@ -4,10 +4,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import axios from 'axios';
-
-// Configurar axios base URL
-axios.defaults.baseURL = 'http://localhost:5000/api';
+import { setAuthToken } from './services/api';
 
 // Screens
 import LoginScreen from './screens/LoginScreen';
@@ -93,7 +90,7 @@ export default function App() {
       const userData = await AsyncStorage.getItem('user');
       
       if (token && userData) {
-        axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+        setAuthToken(token);
         setUser(JSON.parse(userData));
       }
     } catch (error) {
@@ -106,14 +103,14 @@ export default function App() {
   const handleLogin = async (userData, token) => {
     await AsyncStorage.setItem('token', token);
     await AsyncStorage.setItem('user', JSON.stringify(userData));
-    axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+    setAuthToken(token);
     setUser(userData);
   };
 
   const handleLogout = async () => {
     await AsyncStorage.removeItem('token');
     await AsyncStorage.removeItem('user');
-    delete axios.defaults.headers.common['Authorization'];
+    setAuthToken(null);
     setUser(null);
   };
 

@@ -11,7 +11,7 @@ import {
   Platform,
   SafeAreaView,
 } from 'react-native';
-import axios from 'axios';
+import api, { API_HOST } from '../services/api';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import io from 'socket.io-client';
 
@@ -31,7 +31,7 @@ const ChatScreen = ({ navigation }) => {
 
   useEffect(() => {
     if (user && !socket) {
-      const newSocket = io('http://localhost:5000');
+      const newSocket = io(API_HOST);
       newSocket.emit('join', user._id);
       
       newSocket.on('message', (message) => {
@@ -71,7 +71,7 @@ const ChatScreen = ({ navigation }) => {
 
   const loadChats = async () => {
     try {
-      const response = await axios.get(`/chats/${user?._id}`);
+      const response = await api.get(`/chats/${user?._id}`);
       setChats(response.data);
     } catch (error) {
       console.error('Erro ao carregar chats:', error);
@@ -80,7 +80,7 @@ const ChatScreen = ({ navigation }) => {
 
   const loadMessages = async (chatId) => {
     try {
-      const response = await axios.get(`/chats/${chatId}/messages`);
+      const response = await api.get(`/chats/${chatId}/messages`);
       setMessages(response.data);
       setActiveChat(chats.find(c => c._id === chatId));
     } catch (error) {

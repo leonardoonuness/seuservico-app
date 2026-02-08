@@ -9,7 +9,7 @@ import {
   RefreshControl,
   Alert,
 } from 'react-native';
-import axios from 'axios';
+import api from '../services/api';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Rating } from 'react-native-ratings';
 
@@ -49,7 +49,7 @@ const MyServicesScreen = ({ navigation, route }) => {
         endpoint += `?status=${filter}`;
       }
 
-      const response = await axios.get(endpoint);
+      const response = await api.get(endpoint);
       setServices(response.data);
     } catch (error) {
       console.error('Erro ao carregar serviços:', error);
@@ -66,23 +66,23 @@ const MyServicesScreen = ({ navigation, route }) => {
     try {
       switch (action) {
         case 'accept':
-          await axios.put(`/service-requests/${serviceId}/accept`);
+          await api.put(`/service-requests/${serviceId}/accept`);
           Alert.alert('Sucesso', 'Serviço aceito!');
           break;
         case 'reject':
-          await axios.put(`/service-requests/${serviceId}/reject`);
+          await api.put(`/service-requests/${serviceId}/reject`);
           Alert.alert('Serviço recusado', 'O cliente foi notificado.');
           break;
         case 'start':
-          await axios.put(`/service-requests/${serviceId}/start`);
+          await api.put(`/service-requests/${serviceId}/start`);
           Alert.alert('Serviço iniciado', 'Bom trabalho!');
           break;
         case 'complete':
-          await axios.put(`/service-requests/${serviceId}/complete`);
+          await api.put(`/service-requests/${serviceId}/complete`);
           Alert.alert('Serviço concluído', 'Ótimo trabalho!');
           break;
         case 'cancel':
-          await axios.put(`/service-requests/${serviceId}/cancel`);
+          await api.put(`/service-requests/${serviceId}/cancel`);
           Alert.alert('Serviço cancelado', 'O profissional foi notificado.');
           break;
         case 'rate':
