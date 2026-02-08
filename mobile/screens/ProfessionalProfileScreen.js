@@ -11,7 +11,7 @@ import {
   Alert,
   FlatList,
 } from 'react-native';
-import axios from 'axios';
+import api from '../services/api';
 import { Rating } from 'react-native-ratings';
 import { Calendar } from 'react-native-calendars';
 
@@ -36,7 +36,7 @@ const ProfessionalProfileScreen = ({ navigation, route }) => {
 
   const loadProfessionalProfile = async () => {
     try {
-      const response = await axios.get(`/professionals/${id}`);
+      const response = await api.get(`/professionals/${id}`);
       setProfessional(response.data.professional);
       setReviews(response.data.reviews);
     } catch (error) {
@@ -94,7 +94,7 @@ const ProfessionalProfileScreen = ({ navigation, route }) => {
         scheduledDate: serviceDetails.scheduledDate,
       };
 
-      await axios.post('/service-requests', bookingData);
+      await api.post('/service-requests', bookingData);
       
       Alert.alert(
         'Solicitação enviada!',

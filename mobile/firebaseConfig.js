@@ -1,7 +1,7 @@
 import { initializeApp } from 'firebase/app';
 import { getMessaging, getToken, onMessage } from 'firebase/messaging';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import axios from 'axios';
+import api from './services/api';
 
 const firebaseConfig = {
   apiKey: "SUA_API_KEY",
@@ -56,7 +56,7 @@ const sendTokenToBackend = async (token) => {
     const userData = await AsyncStorage.getItem('user');
     if (userData) {
       const user = JSON.parse(userData);
-      await axios.post('/users/fcm-token', {
+      await api.post('/users/fcm-token', {
         userId: user._id,
         fcmToken: token
       });

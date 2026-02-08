@@ -9,7 +9,7 @@ import {
   SafeAreaView,
   StatusBar,
 } from 'react-native';
-import axios from 'axios';
+import api from '../services/api';
 
 const HomeScreen = ({ navigation }) => {
   const [categories, setCategories] = useState({});
@@ -22,8 +22,8 @@ const HomeScreen = ({ navigation }) => {
   const loadData = async () => {
     try {
       const [categoriesRes, professionalsRes] = await Promise.all([
-        axios.get('/categories'),
-        axios.get('/professionals?isPremium=true&limit=5'),
+        api.get('/categories'),
+        api.get('/professionals?isPremium=true&limit=5'),
       ]);
       
       setCategories(categoriesRes.data);
