@@ -1,0 +1,24 @@
+{
+  "name": "seuservico-mobile",
+  "version": "1.0.0",
+  "private": true,
+  "main": "node_modules/expo/AppEntry.js",
+  "scripts": {
+    "start": "expo start",
+    "android": "expo run:android",
+    "ios": "expo run:ios",
+    "build": "echo 'Use EAS Build para produção: eas build --platform all'",
+    "test": "echo 'No mobile tests configured yet'"
+  },
+  "dependencies": {
+    "@expo/vector-icons": "^14.0.4",
+    "@react-native-async-storage/async-storage": "^1.24.0",
+    "@react-navigation/bottom-tabs": "^7.1.1",
+    "@react-navigation/native": "^7.0.6",
+    "@react-navigation/native-stack": "^7.1.1",
+    "axios": "^1.7.9",
+    "expo": "^52.0.11",
+    "react": "18.3.1",
+    "react-native": "0.76.3"
+  }
+}

@@ -6,7 +6,7 @@ const BASE = process.env.BASE_URL || 'http://localhost:5000';
 const log = (name, ok, info) => console.log(`${ok ? '✅' : '❌'} ${name}`, info || '');
 
 async function startBackendWithInMemoryDB() {
-  const mongod = await MongoMemoryServer.create();
+  const mongod = await MongoMemoryServer.create({ binary: { version: '8.0.4' } });
   const uri = mongod.getUri();
   process.env.MONGODB_URI = uri;
 
