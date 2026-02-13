@@ -1,13 +1,12 @@
 {
   "name": "seuservico-app",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "private": true,
+  "description": "Monorepo do projeto SeuServiço",
   "scripts": {
-    "test": "test": "echo \"No tests configured\" && exit 0"
+    "test": "npm --prefix backend run test:integration",
+    "build": "npm --prefix backend run build && npm --prefix admin-panel run build && npm --prefix mobile run build"
   },
-  "keywords": [],
-  "author": "",
   "license": "ISC",
   "type": "commonjs"
 }

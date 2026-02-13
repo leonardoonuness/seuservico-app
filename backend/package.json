@@ -13,12 +13,15 @@
     "socket.io": "^4.7.0",
     "axios": "^1.4.0",
     "mongodb-memory-server": "^8.12.0"
-  }
-  ,
+  },
   "scripts": {
     "smoke": "node tests/smoke.js",
     "seed": "node scripts/seed.js",
-    "test:integration": "jest --runInBand"
+    "test:integration": "jest --runInBand tests/app.test.js",
+    "start": "node index.js",
+    "dev": "node index.js",
+    "build": "node -e \"console.log(\"Backend pronto para deploy (runtime Node.js).\")\"",
+    "test": "npm run test:integration"
   },
   "devDependencies": {
     "jest": "^29.0.0",

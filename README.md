@@ -212,3 +212,22 @@ Fazer deploy do admin panel
 
 Publicar o app nas lojas
 
+
+## ✅ Ajustes de prontidão para deploy
+
+Este repositório agora inclui:
+
+- Rotas com controladores no backend (`backend/controllers/*`)
+- Scripts de execução/build para backend, admin e mobile
+- Arquivos `.env.example` para backend, admin e mobile
+- Workflow de CI com testes reais de integração do backend
+
+### Firebase em ambiente real
+
+Para conectar ao projeto Firebase real `seuservico-5749a`, configure no backend:
+
+- `FIREBASE_PROJECT_ID=seuservico-5749a`
+- `FIREBASE_CLIENT_EMAIL=firebase-adminsdk-fbsvc@seuservico-5749a.iam.gserviceaccount.com`
+- `FIREBASE_PRIVATE_KEY` com a chave privada da service account
+
+> **Importante:** nunca commite a chave privada no repositório.
