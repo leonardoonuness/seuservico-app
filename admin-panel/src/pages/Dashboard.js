@@ -1,9 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import {
-  LineChart, Line, BarChart, Bar, PieChart, Pie, Cell,
-  XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer
-} from 'recharts';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import Header from '../components/Header';
+import StatCard from '../components/StatCard';
+import { getErrorMessage, request } from '../utils/http';
 
 const Dashboard = () => {
   const [stats, setStats] = useState({
@@ -11,168 +9,169 @@ const Dashboard = () => {
     totalProfessionals: 0,
     totalServices: 0,
     pendingApprovals: 0,
-    revenue: 0,
+    totalRevenue: 0,
   });
-  const [growthData, setGrowthData] = useState([]);
-  const [categoryData, setCategoryData] = useState([]);
+  const [metrics, setMetrics] = useState({
+    categoryMetrics: [],
+    growthMetrics: [],
+    topProfessionals: [],
+  });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
-  useEffect(() => {
-    loadDashboardData();
+  const loadDashboard = useCallback(async () => {
+    setLoading(true);
+    setError('');
+
+    try {
+      const [statsRes, metricsRes] = await Promise.all([
+        request.get('/admin/dashboard/stats'),
+        request.get('/admin/reports/metrics'),
+      ]);
+
+      setStats(statsRes.data);
+      setMetrics(metricsRes.data);
+    } catch (err) {
+      setError(getErrorMessage(err));
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
-  const loadDashboardData = async () => {
-    try {
-      // Em produção, essas chamadas viriam do backend
-      setStats({
-        totalUsers: 1250,
-        totalProfessionals: 320,
-        totalServices: 2450,
-        pendingApprovals: 15,
-        revenue: 45680.50,
-      });
+  useEffect(() => {
+    loadDashboard();
+  }, [loadDashboard]);
 
-      setGrowthData([
-        { month: 'Jan', users: 400, services: 240 },
-        { month: 'Fev', users: 600, services: 320 },
-        { month: 'Mar', users: 800, services: 450 },
-        { month: 'Abr', users: 950, services: 520 },
-        { month: 'Mai', users: 1100, services: 600 },
-        { month: 'Jun', users: 1250, services: 710 },
-      ]);
-
-      setCategoryData([
-        { name: 'Manutenção', value: 35, color: '#0088FE' },
-        { name: 'Tecnologia', value: 20, color: '#00C49F' },
-        { name: 'Casa', value: 15, color: '#FFBB28' },
-        { name: 'Beleza', value: 12, color: '#FF8042' },
-        { name: 'Automotivo', value: 10, color: '#8884D8' },
-        { name: 'Outros', value: 8, color: '#82CA9D' },
-      ]);
-    } catch (error) {
-      console.error('Erro ao carregar dados:', error);
-    }
-  };
-
-  const StatCard = ({ title, value, icon, color }) => (
-    <div className="stat-card" style={{ borderLeft: `4px solid ${color}` }}>
-      <div className="stat-header">
-        <h3>{title}</h3>
-        <span className="stat-icon" style={{ backgroundColor: color }}>{icon}</span>
-      </div>
-      <div className="stat-value">{value}</div>
-    </div>
+  const formattedRevenue = useMemo(
+    () => `R$ ${Number(stats.totalRevenue || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`,
+    [stats.totalRevenue]
   );
 
   return (
-    <div className="dashboard">
-      <h1>Dashboard</h1>
-      
+    <div>
+      <Header
+        title="Dashboard"
+        subtitle="Visão geral de performance e operação do painel."
+        actions={
+          <button type="button" className="ghost" onClick={loadDashboard}>
+            Atualizar
+          </button>
+        }
+      />
+
+      {error ? <div className="error">{error}</div> : null}
+
       <div className="stats-grid">
-        <StatCard 
-          title="Total de Usuários" 
-          value={stats.totalUsers.toLocaleString()} 
-          icon="👥" 
-          color="#4CAF50" 
-        />
-        <StatCard 
-          title="Profissionais" 
-          value={stats.totalProfessionals} 
-          icon="👷" 
-          color="#2196F3" 
-        />
-        <StatCard 
-          title="Serviços Realizados" 
-          value={stats.totalServices} 
-          icon="🔧" 
-          color="#FF9800" 
-        />
-        <StatCard 
-          title="Aprovações Pendentes" 
-          value={stats.pendingApprovals} 
-          icon="⏳" 
-          color="#F44336" 
-        />
-        <StatCard 
-          title="Faturamento Total" 
-          value={`R$ ${stats.revenue.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`} 
-          icon="💰" 
-          color="#9C27B0" 
-        />
+        <StatCard title="Usuários" value={stats.totalUsers} />
+        <StatCard title="Profissionais Verificados" value={stats.totalProfessionals} />
+        <StatCard title="Serviços Concluídos" value={stats.totalServices} />
+        <StatCard title="Aprovações Pendentes" value={stats.pendingApprovals} />
+        <StatCard title="Faturamento" value={formattedRevenue} />
       </div>
 
-      <div className="charts-grid">
-        <div className="chart-container">
-          <h3>Crescimento Mensal</h3>
-          <ResponsiveContainer width="100%" height={300}>
-            <LineChart data={growthData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="month" />
-              <YAxis />
-              <Tooltip />
-              <Legend />
-              <Line type="monotone" dataKey="users" stroke="#4CAF50" name="Usuários" />
-              <Line type="monotone" dataKey="services" stroke="#2196F3" name="Serviços" />
-            </LineChart>
-          </ResponsiveContainer>
+      {loading ? <div className="loading">Carregando métricas...</div> : null}
+
+      {!loading ? (
+        <div className="grid-2">
+          <div className="card">
+            <h3>Top categorias</h3>
+            <div className="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Categoria</th>
+                    <th>Total Serviços</th>
+                    <th>Faturamento</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {metrics.categoryMetrics?.length ? (
+                    metrics.categoryMetrics.slice(0, 6).map((item) => (
+                      <tr key={item._id || 'sem-categoria'}>
+                        <td>{item._id || 'Sem categoria'}</td>
+                        <td>{item.totalServices || 0}</td>
+                        <td>
+                          R$ {Number(item.totalRevenue || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan={3} className="empty">
+                        Sem dados de categoria.
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div className="card">
+            <h3>Top profissionais</h3>
+            <div className="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Profissional</th>
+                    <th>Avaliação</th>
+                    <th>Reviews</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {metrics.topProfessionals?.length ? (
+                    metrics.topProfessionals.map((item) => (
+                      <tr key={item._id}>
+                        <td>{item.name || item.email || item._id}</td>
+                        <td>{Number(item.avgRating || 0).toFixed(1)} ⭐</td>
+                        <td>{item.totalReviews || 0}</td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan={3} className="empty">
+                        Sem profissionais com volume mínimo de reviews.
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div className="card" style={{ gridColumn: '1 / -1' }}>
+            <h3>Crescimento mensal</h3>
+            <div className="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Mês/Ano</th>
+                    <th>Serviços</th>
+                    <th>Clientes ativos</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {metrics.growthMetrics?.length ? (
+                    metrics.growthMetrics.map((item) => (
+                      <tr key={`${item.year}-${item.month}`}>
+                        <td>{`${item.month}/${item.year}`}</td>
+                        <td>{item.totalServices || 0}</td>
+                        <td>{item.totalUsers || 0}</td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan={3} className="empty">
+                        Sem dados de crescimento.
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
         </div>
-
-        <div className="chart-container">
-          <h3>Serviços por Categoria</h3>
-          <ResponsiveContainer width="100%" height={300}>
-            <PieChart>
-              <Pie
-                data={categoryData}
-                cx="50%"
-                cy="50%"
-                labelLine={false}
-                label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
-                outerRadius={80}
-                fill="#8884d8"
-                dataKey="value"
-              >
-                {categoryData.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={entry.color} />
-                ))}
-              </Pie>
-              <Tooltip />
-            </PieChart>
-          </ResponsiveContainer>
-        </div>
-      </div>
-
-      <div className="recent-activity">
-        <h3>Atividade Recente</h3>
-        <table>
-          <thead>
-            <tr>
-              <th>Data</th>
-              <th>Usuário</th>
-              <th>Ação</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>10/06/2023 14:30</td>
-              <td>João Silva (Cliente)</td>
-              <td>Solicitou serviço de Encanador</td>
-              <td><span className="status completed">Concluído</span></td>
-            </tr>
-            <tr>
-              <td>10/06/2023 12:15</td>
-              <td>Maria Santos (Profissional)</td>
-              <td>Cadastro pendente de aprovação</td>
-              <td><span className="status pending">Pendente</span></td>
-            </tr>
-            <tr>
-              <td>09/06/2023 18:45</td>
-              <td>Carlos Oliveira</td>
-              <td>Avaliou serviço ⭐⭐⭐⭐⭐</td>
-              <td><span className="status approved">Aprovado</span></td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+      ) : null}
     </div>
   );
 };
