@@ -8,6 +8,7 @@ const { initializeSocket } = require('./socket');
 const authMiddleware = require('./middleware/auth');
 const User = require('./models/User');
 const Professional = require('./models/Professional');
+const { initializeFirebaseAdmin } = require('./firebaseAdmin');
 
 const app = express();
 
@@ -76,6 +77,7 @@ app.get('/health', (req, res) => {
 });
 
 async function startServer({ port = process.env.PORT || 5000 } = {}) {
+  initializeFirebaseAdmin({ strict: process.env.NODE_ENV === 'production' });
   await mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/seuservico');
 
   const server = http.createServer(app);
