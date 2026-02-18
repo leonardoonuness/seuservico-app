@@ -23,7 +23,7 @@ const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
 // Navegação Principal para Clientes
-function ClientTabs() {
+function ClientTabs({ onLogout }) {
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
@@ -44,13 +44,15 @@ function ClientTabs() {
       <Tab.Screen name="Buscar" component={CategoriesScreen} />
       <Tab.Screen name="Chat" component={ChatScreen} />
       <Tab.Screen name="Serviços" component={MyServicesScreen} />
-      <Tab.Screen name="Perfil" component={ProfileScreen} />
+      <Tab.Screen name="Perfil">
+        {(props) => <ProfileScreen {...props} onLogout={onLogout} />}
+      </Tab.Screen>
     </Tab.Navigator>
   );
 }
 
 // Navegação Principal para Profissionais
-function ProfessionalTabs() {
+function ProfessionalTabs({ onLogout }) {
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
@@ -70,8 +72,12 @@ function ProfessionalTabs() {
       <Tab.Screen name="Dashboard" component={ProfessionalDashboardScreen} />
       <Tab.Screen name="Agenda" component={MyServicesScreen} />
       <Tab.Screen name="Chat" component={ChatScreen} />
-      <Tab.Screen name="Portfólio" component={ProfileScreen} />
-      <Tab.Screen name="Perfil" component={ProfileScreen} />
+      <Tab.Screen name="Portfólio">
+        {(props) => <ProfileScreen {...props} onLogout={onLogout} />}
+      </Tab.Screen>
+      <Tab.Screen name="Perfil">
+        {(props) => <ProfileScreen {...props} onLogout={onLogout} />}
+      </Tab.Screen>
     </Tab.Navigator>
   );
 }

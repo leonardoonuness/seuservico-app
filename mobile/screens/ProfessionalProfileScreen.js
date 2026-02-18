@@ -12,6 +12,7 @@ import {
   FlatList,
 } from 'react-native';
 import api from '../services/api';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Rating } from 'react-native-ratings';
 import { Calendar } from 'react-native-calendars';
 
