@@ -14,7 +14,7 @@ O SeuServiço é uma solução completa para conectar profissionais autônomos a
 
 ⚙️ Backend API REST (Node.js + Express) com comunicação em tempo real via Socket.io
 
-🔐 Autenticação e Banco de Dados (Firebase)
+🔐 Autenticação via JWT + MongoDB e integração backend com Firebase Admin (Service Account)
 
 🚀 Começando
 Pré-requisitos
@@ -152,24 +152,21 @@ expo build:ios
 Opções recomendadas: Google Play Store e Apple App Store via EAS Build
 
 📄 Arquivos .env.example
-Backend (.env.example)
+Backend (.env.example) — padrão Firebase Admin (Service Account)
 env
-PORT=3000
+PORT=5000
 NODE_ENV=development
-FIREBASE_API_KEY=your_api_key
-FIREBASE_AUTH_DOMAIN=your_auth_domain
+MONGODB_URI=mongodb://localhost:27017/seuservico
+JWT_SECRET=change_this_secret
 FIREBASE_PROJECT_ID=your_project_id
-FIREBASE_STORAGE_BUCKET=your_storage_bucket
-FIREBASE_MESSAGING_SENDER_ID=your_sender_id
-FIREBASE_APP_ID=your_app_id
+FIREBASE_CLIENT_EMAIL=firebase-adminsdk-xxx@your_project_id.iam.gserviceaccount.com
+FIREBASE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\nYOUR_PRIVATE_KEY\n-----END PRIVATE KEY-----\n"
 Mobile (.env.example)
 env
-API_URL=http://localhost:3000
-SOCKET_URL=http://localhost:3000
+EXPO_PUBLIC_API_URL=http://localhost:5000/api
 Admin Panel (.env.example)
 env
-REACT_APP_API_URL=http://localhost:3000
-REACT_APP_FIREBASE_CONFIG=your_firebase_config
+REACT_APP_API_URL=http://localhost:5000/api
 🤝 Como Contribuir
 Faça um fork do projeto
 
@@ -212,6 +209,32 @@ Fazer deploy do admin panel
 
 Publicar o app nas lojas
 
+
+
+### Como validar localmente (backend)
+
+1. Copie o arquivo de ambiente e configure as variáveis do Service Account:
+
+```bash
+cd backend
+cp .env.example .env
+```
+
+2. Preencha no `.env`:
+
+- `FIREBASE_PROJECT_ID`
+- `FIREBASE_CLIENT_EMAIL`
+- `FIREBASE_PRIVATE_KEY` (mantendo `\n` na chave)
+
+3. Inicie o backend:
+
+```bash
+npm install
+npm run dev
+```
+
+- Em `NODE_ENV=development`, o backend apenas avisa caso falte configuração Firebase.
+- Em `NODE_ENV=production`, a inicialização falha se as variáveis obrigatórias do Firebase Admin não estiverem definidas.
 
 ## ✅ Ajustes de prontidão para deploy
 
