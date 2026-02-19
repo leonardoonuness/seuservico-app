@@ -20,7 +20,7 @@
     "test:integration": "jest --runInBand tests/app.test.js",
     "start": "node index.js",
     "dev": "node index.js",
-    "build": "node -e \"console.log('Backend pronto para deploy (runtime Node.js).')\"",
+    "build": "node -e \"console.log(\\\"Backend pronto para deploy (runtime Node.js).\\\")\"",
     "test": "npm run test:integration"
   },
   "devDependencies": {
